@@ -48,8 +48,15 @@ fn render_katex_aux(content: &str, rex: Regex, display: bool) -> String {
             with_katex.push_str(str::from_utf8(&cont_bytes[last..replace.start()]).unwrap());
             last = replace.end();
             let s = str::from_utf8(&cont_bytes[tex.start()..tex.end()]).unwrap();
-            let k_html = katex::render_with_opts(s, k_opts.clone()).unwrap();
-            with_katex.push_str(&k_html);
+            
+            match katex::render_with_opts(s, k_opts.clone()) {
+                Ok(a) => with_katex.push_str(&a),
+                Err(e) => {
+                    println!("Katex render error: {:?}", e);
+                    with_katex.push_str(&s);
+                }
+            };
+            
             // println!("{:?}", k_html);
         }
     }
